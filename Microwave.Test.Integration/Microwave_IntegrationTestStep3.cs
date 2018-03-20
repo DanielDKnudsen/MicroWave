@@ -12,20 +12,21 @@ using NUnit.Framework;
 namespace Microwave.Test.Integration
 {
     [TestFixture]
-    public class Microwave_IntegrationTestStep1
+    public class Microwave_IntegrationTestStep3
     {
-        // DENNE TESTKLASSE BLEV OVER-DO'ET EN DEL FORDI VI KASTEDE OS UD I DET FØR VI HAVDE FORSTÅET OPGAVEN KORREKT. Men Light virker i hvert fald! :)
         private IButton _powerButton;
         private IButton _timeButton;
         private IButton _startCancelButton;
 
         private IDoor _door;
-        private ICookController _cookController;
-        private IDisplay _uut;
+        private CookController _uut;
+        private Display _display;
         private Light _light;
         private IOutput _output;
 
         private UserInterface _driver;
+        private ITimer _timer;
+        private IPowerTube _powerTube;
 
 
         [SetUp]
@@ -37,61 +38,49 @@ namespace Microwave.Test.Integration
             _timeButton = Substitute.For<IButton>();
             _startCancelButton = Substitute.For<IButton>();
             _door = Substitute.For<IDoor>();
-            _cookController = Substitute.For<ICookController>();
-            _uut = Substitute.For<IDisplay>();
-            _driver = new UserInterface(_powerButton, _timeButton, _startCancelButton, _door, _uut, _light,
-                _cookController);
+            _timer = Substitute.For<ITimer>();
+            _powerTube = Substitute.For<IPowerTube>();
+            _uut = new CookController(_timer, _display, _powerTube, _driver);
+            _display = new Display(_output);
+            _driver = new UserInterface(_powerButton, _timeButton, _startCancelButton, _door, _display, _light, _uut);
         }
 
         [Test]
-        public void Ready_DoorOpen_LightOn()
-        {
-            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned on");
-        }
-
-        [Test]
-        public void Ready_DoorOpenDoorClosed_LightOff()
-        {
-            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
-            _door.Closed += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned off");
-        }
-
-        [Test]
-        public void SetPower_DoorOpened_LightOn()
-        {
-            _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
-            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned on");
-        }
-
-        [Test]
-        public void SetTime_DoorOpened_LightOn()
-        {
-            _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
-            _timeButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
-            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned on");
-        }
-
-        [Test]
-        public void SetTime_StartButton_LightOn()
+        public void StartCooking_StartButton_CookingTimerIsCalled()
         {
             _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
             _timeButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
             _startCancelButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned on");
+            _timer.Received().Start(60);
         }
 
         [Test]
-        public void SetTime_StartButton2Times_LightOff()
+        public void StartCooking_StartButton_PowerTubeIsCalled()
         {
             _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
             _timeButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
             _startCancelButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
+            _powerTube.Received().TurnOn(50);
+        }
+
+        [Test]
+        public void StopCooking_StopButton_CookingTimerStopped()
+        {
+            _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
+            _timeButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
             _startCancelButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
-            _output.Received().OutputLine("Light is turned off");
+            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
+            _timer.Received().Stop();
+        }
+
+        [Test]
+        public void StopCooking_StopButton_CookingPowerTubeIsStopped()
+        {
+            _powerButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
+            _timeButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
+            _startCancelButton.Pressed += Raise.EventWith(this, EventArgs.Empty);
+            _door.Opened += Raise.EventWith(this, EventArgs.Empty);
+            _powerTube.Received().TurnOff();
         }
     }
 }
