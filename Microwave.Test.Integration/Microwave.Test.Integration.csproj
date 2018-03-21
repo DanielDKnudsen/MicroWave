@@ -59,6 +59,7 @@
     <Compile Include="Microwave_IntegrationsTestStep2.cs" />
     <Compile Include="Microwave_IntegrationTestStep1.cs" />
     <Compile Include="Microwave_IntegrationTestStep3.cs" />
+    <Compile Include="Microwave_IntegrationTestStep8.cs" />
     <Compile Include="Microwave_IntegrationTestStep7.cs" />
     <Compile Include="Microwave_IntegrationTestStep4.cs" />
     <Compile Include="Microwave_IntegrationTestStep5.cs" />
