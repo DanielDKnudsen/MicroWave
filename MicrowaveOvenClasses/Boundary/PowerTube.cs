@@ -16,6 +16,9 @@ namespace MicrowaveOvenClasses.Boundary
 
         public void TurnOn(int power)
         {
+            // Nedenfor er tilføjet en beregning der omregner fra Watt til procent af max effekt.
+            power = power / 700 * 100;
+
             if (power < 1 || 100 < power)
             {
                 throw new ArgumentOutOfRangeException("power", power, "Must be between 1 and 100 % (incl.)");
