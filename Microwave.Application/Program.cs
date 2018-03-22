@@ -40,20 +40,14 @@ namespace Microwave.Application
             _ui = new UserInterface(_powerButton, _timeButton, _startCancelButton, _door, _display, _light, _cooker);
             _cooker.UI = _ui;
 
+            _door.Open();
+            _door.Close();
+
             _powerButton.Press();
             _powerButton.Press();
             _powerButton.Press();
             _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
-            _powerButton.Press();
+
 
             _timeButton.Press();
             _timeButton.Press();
